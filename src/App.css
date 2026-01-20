@@ -1,30 +1,147 @@
 * {
   box-sizing: border-box;
-  font-family: system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #0f172a;
 }
 
 .page {
   min-height: 100vh;
-  background: radial-gradient(circle at top, #020617, #000);
+  background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   color: #e5e7eb;
+  padding: 20px;
 }
 
 .card {
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(15, 23, 42, 0.9);
   border: 1px solid #1e293b;
-  border-radius: 18px;
-  padding: 32px;
-  width: 360px;
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
 }
 
 .subtitle {
   color: #94a3b8;
   margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.booking-container {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #1e293b;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 1200px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.booking-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0;
+  color: #f1f5f9;
+}
+
+.logout-btn {
+  padding: 10px 20px;
+  background: #dc2626;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+
+.nav-btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: #1e293b;
+  color: #e5e7eb;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.nav-btn:hover {
+  background: #334155;
+  border-color: #475569;
+  transform: translateY(-2px);
+}
+
+.slots-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.slots-table th {
+  background: #1e293b;
+  padding: 15px;
+  text-align: left;
+  font-weight: 700;
+  color: #cbd5e1;
+  border-bottom: 2px solid #334155;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.slots-table td {
+  padding: 14px 15px;
+  border-bottom: 1px solid #1e293b;
+  color: #cbd5e1;
+}
+
+.slots-table tr:hover {
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.free-slots {
+  font-weight: 700;
+  color: #10b981;
+  font-size: 16px;
+}
+
+.free-slots.full {
+  color: #ef4444;
 }
 
 .grid {
