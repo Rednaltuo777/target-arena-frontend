@@ -1,8 +1,28 @@
+import { useState } from "react";
+import Login from "./components/Login";
+import UserBooking from "./UserBooking";
+import AuthCallback from "./authCallback";
+
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+  };
+
+  const handleLogout = async () => {
+    setUser(null);
+  };
+
   return (
-    <div style={{ padding: "40px", textAlign: "center", background: "#0f172a", color: "white", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <h1>🎯 Target Arena funkar!</h1>
-      <p>React är igång</p>
-    </div>
+    <>
+      <AuthCallback onLogin={handleLogin} />
+      
+      {!user ? (
+        <Login />
+      ) : (
+        <UserBooking user={user} onLogout={handleLogout} />
+      )}
+    </>
   );
 }
