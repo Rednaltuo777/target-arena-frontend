@@ -1,45 +1,53 @@
 import { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
+import { supabase } from "./lib/supabase";
 import "./App.css";
 
-export default function UserBooking() {
+export default function UserBooking({ userRole, onLogout }) {
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
   const [slots, setSlots] = useState([]);
-  const TOTAL_LANES = 9;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadSlots();
   }, [weekStart]);
 
   async function loadSlots() {
+    setLoading(true);
+    const startDate = weekStart.toISOString().slice(0, 10);
+    const endDate = new Date(weekStart);
+    endDate.setDate(endDate.getDate() + 6);
+    const endDateStr = endDate.toISOString().slice(0, 10);
+
+    const { data: available } = await supabase
+      .from("available_slots")
+      .select("*")
+      .gte("date", startDate)
+      .lte("date", endDateStr)
+      .order("start_time", { ascending: true });
+
     const newSlots = [];
+    for (const slot of available || []) {
+      const slotStart = new Date(slot.start_time);
+      const slotEnd = new Date(slot.end_time);
 
-    for (let day = 0; day < 7; day++) {
-      const date = new Date(weekStart);
-      date.setDate(date.getDate() + day);
+      const { count } = await supabase
+        .from("bookings")
+        .select("*", { count: "exact", head: true })
+        .lt("start_time", slotEnd.toISOString())
+        .gt("end_time", slotStart.toISOString());
 
-      for (let hour = 10; hour <= 21; hour++) {
-        const start = new Date(date);
-        start.setHours(hour, 0, 0, 0);
-
-        const end = new Date(start);
-        end.setMinutes(90);
-
-        const { count } = await supabase
-          .from("bookings")
-          .select("*", { count: "exact", head: true })
-          .lt("start_time", end.toISOString())
-          .gt("end_time", start.toISOString());
-
-        newSlots.push({
-          date: date.toISOString().slice(0, 10),
-          time: `${pad(hour)}:00 – ${pad(end.getHours())}:${pad(end.getMinutes())}`,
-          free: TOTAL_LANES - (count || 0),
-        });
-      }
+      newSlots.push({
+        id: slot.id,
+        date: slot.date,
+        start: slotStart,
+        end: slotEnd,
+        totalLanes: slot.total_lanes || 0,
+        free: (slot.total_lanes || 0) - (count || 0),
+      });
     }
 
     setSlots(newSlots);
+    setLoading(false);
   }
 
   return (
@@ -50,27 +58,48 @@ export default function UserBooking() {
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <button className="nav-btn" onClick={() => shiftWeek(-7)}>⬅ Föregående</button>
             <button className="nav-btn" onClick={() => shiftWeek(7)}>Nästa ➡</button>
+            {(userRole === "admin" || userRole === "superadmin") && (
+              <button className="nav-btn" onClick={() => window.location.href = "/admin"}>
+                Admin
+              </button>
+            )}
+            <button className="nav-btn" onClick={() => window.location.href = "/chat"}>
+              Chatt
+            </button>
+            <button className="logout-btn" onClick={onLogout}>
+              Logga ut
+            </button>
           </div>
         </div>
 
-        <table className="slots-table">
-          <thead>
-            <tr>
-              <th>Datum</th>
-              <th>Tid (24h)</th>
-              <th>Lediga banor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {slots.map((s, i) => (
-              <tr key={i}>
-                <td>{s.date}</td>
-                <td>{s.time}</td>
-                <td className={s.free > 0 ? "free-slots" : "free-slots full"}>{s.free}</td>
+        {loading ? (
+          <p style={{ color: "#94a3b8" }}>Laddar tider...</p>
+        ) : slots.length === 0 ? (
+          <p style={{ color: "#94a3b8" }}>Inga tider skapade än.</p>
+        ) : (
+          <table className="slots-table">
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Tid (24h)</th>
+                <th>Lediga banor</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {slots.map((s) => (
+                <tr key={s.id}>
+                  <td>{s.date}</td>
+                  <td>
+                    {s.start.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })}
+                    {" – "}
+                    {s.end.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })}
+                  </td>
+                  <td className={s.free > 0 ? "free-slots" : "free-slots full"}>{s.free}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
