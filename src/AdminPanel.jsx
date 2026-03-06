@@ -48,9 +48,25 @@ export default function AdminPanel({ onLogout }) {
       console.error(error);
     } else {
       setStartTime("");
-      setEndTime("");
       loadRanges();
     }
+  };
+
+  const deleteTime = async (slotId) => {
+    if (!window.confirm("Radera denna tid?")) return;
+
+    const { error } = await supabase
+      .from("available_slots")
+      .delete()
+      .eq("id", slotId);
+
+    if (error) {
+      alert("Fel vid radering av tid");
+      console.error(error);
+      return;
+    }
+
+    loadRanges();
   };
 
   return (
@@ -76,6 +92,7 @@ export default function AdminPanel({ onLogout }) {
         <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
           <input
             type="date"
+            lang="sv-SE"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
@@ -106,22 +123,27 @@ export default function AdminPanel({ onLogout }) {
         ) : (
           <ul style={{ margin: 0, paddingLeft: 18 }}>
             {ranges.map((r) => (
-              <li key={r.id}>
-                {new Date(r.start_time).toLocaleString("sv-SE", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                {" – "}
-                {new Date(r.end_time).toLocaleTimeString("sv-SE", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                {" | "}
-                Banor: {r.total_lanes}
+              <li key={r.id} style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+                <span>
+                  {new Date(r.start_time).toLocaleString("sv-SE", {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  {" – "}
+                  {new Date(r.end_time).toLocaleTimeString("sv-SE", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  {" | "}
+                  Banor: {r.total_lanes}
+                </span>
+                <button className="logout-btn" style={{ padding: "6px 12px" }} onClick={() => deleteTime(r.id)}>
+                  Radera
+                </button>
               </li>
             ))}
           </ul>

@@ -21,6 +21,7 @@ export default function App() {
   const isCancel = window.location.pathname === "/cancel";
   const isAdmin = window.location.pathname === "/admin";
   const isChat = window.location.pathname === "/chat";
+  const isReset = window.location.pathname === "/reset";
   const isRecovery = window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).get("type") === "recovery";
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export default function App() {
     <>
       {isCancel ? (
         <CancelBooking />
-      ) : isRecovery ? (
+      ) : (isReset || isRecovery) ? (
         <ResetPassword />
       ) : loading ? (
         <div className="page">
