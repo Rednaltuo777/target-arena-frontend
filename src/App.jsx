@@ -35,49 +35,67 @@ export default function App() {
       setForceReset(true);
     }
 
-    async function initAuth() {
-      const { data } = await supabase.auth.getSession();
-      
-      if (data?.session) {
-        const userData = data.session.user;
-        setUser(userData);
+    const handleSession = async (session) => {
+      setLoading(true);
 
-        const isSuperadmin = userData.email === SUPERADMIN_EMAIL;
-        let resolvedRole = isSuperadmin ? "superadmin" : "user";
+      if (!session) {
+        setUser(null);
+        setUserRole(null);
+        setFullName("");
+        setLoading(false);
+        return;
+      }
 
-        const { data: dbUser } = await supabase
-          .from("users")
-          .select("id, role, full_name")
-          .eq("email", userData.email)
-          .maybeSingle();
+      const userData = session.user;
+      setUser(userData);
 
-        if (dbUser) {
-          if (isSuperadmin && dbUser.role !== "superadmin") {
-            await supabase
-              .from("users")
-              .update({ role: "superadmin", approved: true })
-              .eq("id", dbUser.id);
-          }
+      const isSuperadmin = userData.email === SUPERADMIN_EMAIL;
+      let resolvedRole = isSuperadmin ? "superadmin" : "user";
 
-          resolvedRole = isSuperadmin ? "superadmin" : dbUser.role || "user";
-          setFullName(dbUser.full_name || "");
-        } else {
-          await supabase.from("users").insert({
-            email: userData.email,
-            user_id: userData.id,
-            role: resolvedRole,
-            approved: isSuperadmin,
-          });
-          setFullName("");
+      const { data: dbUser } = await supabase
+        .from("users")
+        .select("id, role, full_name")
+        .eq("email", userData.email)
+        .maybeSingle();
+
+      if (dbUser) {
+        if (isSuperadmin && dbUser.role !== "superadmin") {
+          await supabase
+            .from("users")
+            .update({ role: "superadmin", approved: true })
+            .eq("id", dbUser.id);
         }
 
-        setUserRole(resolvedRole);
+        resolvedRole = isSuperadmin ? "superadmin" : dbUser.role || "user";
+        setFullName(dbUser.full_name || "");
+      } else {
+        await supabase.from("users").insert({
+          email: userData.email,
+          user_id: userData.id,
+          role: resolvedRole,
+          approved: isSuperadmin,
+        });
+        setFullName("");
       }
-      
+
+      setUserRole(resolvedRole);
       setLoading(false);
-    }
-    
+    };
+
+    const initAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      await handleSession(data?.session || null);
+    };
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      handleSession(session);
+    });
+
     initAuth();
+
+    return () => {
+      listener?.subscription?.unsubscribe();
+    };
   }, []);
 
   const handleLogout = async () => {
