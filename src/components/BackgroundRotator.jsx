@@ -9,6 +9,13 @@ export default function BackgroundRotator() {
       "/rotator/slide-3.jpg",
       "/rotator/slide-4.jpg",
       "/rotator/slide-5.jpg",
+      "/rotator/slide-6.jpg",
+      "/rotator/slide-7.jpg",
+      "/rotator/slide-8.jpg",
+      "/rotator/slide-9.jpg",
+      "/rotator/slide-10.jpg",
+      "/rotator/slide-11.jpg",
+      "/rotator/slide-12.jpg",
     ],
     []
   );
