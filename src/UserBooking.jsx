@@ -3,26 +3,21 @@ import { supabase } from "./lib/supabase";
 import "./App.css";
 
 export default function UserBooking({ userRole, onLogout }) {
-  const [weekStart, setWeekStart] = useState(getMonday(new Date()));
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadSlots();
-  }, [weekStart]);
+  }, []);
 
   async function loadSlots() {
     setLoading(true);
-    const startDate = weekStart.toISOString().slice(0, 10);
-    const endDate = new Date(weekStart);
-    endDate.setDate(endDate.getDate() + 6);
-    const endDateStr = endDate.toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10);
 
     const { data: available } = await supabase
       .from("available_slots")
       .select("*")
-      .gte("date", startDate)
-      .lte("date", endDateStr)
+      .gte("date", today)
       .order("start_time", { ascending: true });
 
     const newSlots = [];
@@ -54,10 +49,8 @@ export default function UserBooking({ userRole, onLogout }) {
     <div className="page">
       <div className="booking-container">
         <div className="booking-header">
-          <h2 className="booking-title">📅 Bokning (veckovy)</h2>
+          <h2 className="booking-title">📅 Bokning (alla kommande tider)</h2>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            <button className="nav-btn" onClick={() => shiftWeek(-7)}>⬅ Föregående</button>
-            <button className="nav-btn" onClick={() => shiftWeek(7)}>Nästa ➡</button>
             {(userRole === "admin" || userRole === "superadmin") && (
               <button className="nav-btn" onClick={() => window.location.href = "/admin"}>
                 Admin
@@ -104,23 +97,4 @@ export default function UserBooking({ userRole, onLogout }) {
     </div>
   );
 
-  function shiftWeek(days) {
-    const d = new Date(weekStart);
-    d.setDate(d.getDate() + days);
-    setWeekStart(getMonday(d));
-  }
-}
-
-/* ===== Helpers ===== */
-
-function getMonday(date) {
-  const d = new Date(date);
-  const day = d.getDay() || 7;
-  if (day !== 1) d.setDate(d.getDate() - day + 1);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function pad(n) {
-  return n.toString().padStart(2, "0");
 }
