@@ -13,6 +13,7 @@ export default function App() {
   const [userRole, setUserRole] = useState(null);
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [forceReset, setForceReset] = useState(false);
 
   // Superadmin email
   const SUPERADMIN_EMAIL = "rednaltuo@gmail.com";
@@ -25,6 +26,14 @@ export default function App() {
   const isRecovery = window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).get("type") === "recovery";
 
   useEffect(() => {
+    const hasRecoveryFlag = window.location.hash.includes("type=recovery") || new URLSearchParams(window.location.search).get("type") === "recovery";
+    if (hasRecoveryFlag) {
+      sessionStorage.setItem("reset_password", "1");
+      setForceReset(true);
+    } else if (sessionStorage.getItem("reset_password") === "1") {
+      setForceReset(true);
+    }
+
     async function initAuth() {
       const { data } = await supabase.auth.getSession();
       
@@ -81,7 +90,7 @@ export default function App() {
     <>
       {isCancel ? (
         <CancelBooking />
-      ) : (isReset || isRecovery) ? (
+      ) : (isReset || isRecovery || forceReset) ? (
         <ResetPassword />
       ) : loading ? (
         <div className="page">

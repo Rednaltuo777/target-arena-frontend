@@ -50,6 +50,7 @@ export default function ResetPassword() {
       setStatus("❌ Fel: " + error.message);
     } else {
       setStatus("✅ Lösenord uppdaterat. Du kan logga in");
+      sessionStorage.removeItem("reset_password");
     }
   };
 
