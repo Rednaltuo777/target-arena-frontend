@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
+import "./App.css";
 
 export default function UserBooking() {
   const [weekStart, setWeekStart] = useState(getMonday(new Date()));
@@ -42,30 +43,35 @@ export default function UserBooking() {
   }
 
   return (
-    <div>
-      <h2>📅 Bokning (veckovy)</h2>
+    <div className="page">
+      <div className="booking-container">
+        <div className="booking-header">
+          <h2 className="booking-title">📅 Bokning (veckovy)</h2>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <button className="nav-btn" onClick={() => shiftWeek(-7)}>⬅ Föregående</button>
+            <button className="nav-btn" onClick={() => shiftWeek(7)}>Nästa ➡</button>
+          </div>
+        </div>
 
-      <button onClick={() => shiftWeek(-7)}>⬅ Föregående</button>
-      <button onClick={() => shiftWeek(7)}>Nästa ➡</button>
-
-      <table border="1" cellPadding="6">
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Tid (24h)</th>
-            <th>Lediga banor</th>
-          </tr>
-        </thead>
-        <tbody>
-          {slots.map((s, i) => (
-            <tr key={i}>
-              <td>{s.date}</td>
-              <td>{s.time}</td>
-              <td>{s.free}</td>
+        <table className="slots-table">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Tid (24h)</th>
+              <th>Lediga banor</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {slots.map((s, i) => (
+              <tr key={i}>
+                <td>{s.date}</td>
+                <td>{s.time}</td>
+                <td className={s.free > 0 ? "free-slots" : "free-slots full"}>{s.free}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 
