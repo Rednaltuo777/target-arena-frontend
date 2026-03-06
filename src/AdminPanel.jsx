@@ -104,13 +104,34 @@ export default function AdminPanel({ onLogout }) {
             onChange={(e) => setStartTime(e.target.value)}
           />
 
-          <input
-            type="number"
-            min="1"
-            value={lanes}
-            onChange={(e) => setLanes(Number(e.target.value))}
-            style={{ width: 80 }}
-          />
+          <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ color: "#94a3b8", fontSize: "13px" }}>Antal banor</span>
+            <select
+              value={lanes}
+              onChange={(e) => setLanes(Number(e.target.value))}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "10px",
+                border: "1px solid #1e293b",
+                background: "#0f172a",
+                color: "#e5e7eb",
+                fontWeight: 600,
+                minWidth: 90,
+                appearance: "none",
+                backgroundImage: "linear-gradient(45deg, transparent 50%, #94a3b8 50%), linear-gradient(135deg, #94a3b8 50%, transparent 50%)",
+                backgroundPosition: "calc(100% - 16px) 50%, calc(100% - 11px) 50%",
+                backgroundSize: "5px 5px, 5px 5px",
+                backgroundRepeat: "no-repeat",
+                paddingRight: "30px",
+              }}
+            >
+            {Array.from({ length: 9 }, (_, i) => i + 1).map((value) => (
+              <option key={value} value={value}>
+                {value} bana{value === 1 ? "" : "or"}
+              </option>
+            ))}
+            </select>
+          </label>
 
           <button className="nav-btn" onClick={createTime}>Skapa tid</button>
         </div>
