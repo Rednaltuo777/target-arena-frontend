@@ -9,6 +9,41 @@ body {
   background: #0f172a;
 }
 
+.app-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.bg-rotator {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bg-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 1.2s ease, transform 7s ease;
+}
+
+.bg-slide.active {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.85) 55%, rgba(2, 6, 23, 0.98));
+  backdrop-filter: blur(2px);
+}
+
 .page {
   min-height: 100vh;
   background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Login from "./components/Login";
 import FullNamePrompt from "./components/FullNamePrompt";
 import ResetPassword from "./components/ResetPassword";
+import BackgroundRotator from "./components/BackgroundRotator";
 import UserBooking from "./UserBooking";
 import CancelBooking from "./CancelBooking";
 import AdminPanel from "./AdminPanel";
@@ -88,6 +89,8 @@ export default function App() {
 
   return (
     <>
+      <BackgroundRotator />
+      <div className="app-shell">
       {isCancel ? (
         <CancelBooking />
       ) : (isReset || isRecovery || forceReset) ? (
@@ -129,6 +132,7 @@ export default function App() {
       ) : (
         <UserBooking user={user} userRole={userRole} onLogout={handleLogout} fullName={fullName} />
       )}
+      </div>
     </>
   );
 }
